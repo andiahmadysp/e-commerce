@@ -1,0 +1,11 @@
+id,name,category,price,stock
+P001,Laptop ASUS ROG,Elektronik,15000000,10
+P002,Mouse Logitech MX Master,Elektronik,1200000,25
+P003,Keyboard Mechanical RGB,Elektronik,800000,30
+P004,Monitor LG 27 inch,Elektronik,3500000,15
+P005,Webcam Logitech C920,Elektronik,1500000,20
+P006,Headset Gaming HyperX,Elektronik,900000,40
+P007,SSD Samsung 1TB,Elektronik,2000000,35
+P008,RAM Corsair 16GB,Elektronik,1100000,50
+P009,Mousepad Gaming XXL,Aksesoris,250000,100
+P010,USB Hub 7 Port,Aksesoris,300000,60

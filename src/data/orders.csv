@@ -1,0 +1,7 @@
+orderId,customerName,productId,quantity,shippingCity,status
+ORD1001,Budi Santoso,P001,1,Bandung,PROCESSING
+ORD1002,Ani Wijaya,P002,2,Jakarta,SHIPPED
+ORD1003,Citra Dewi,P003,1,Surabaya,DELIVERED
+ORD1004,Dedi Kurniawan,P004,1,Semarang,PENDING
+ORD1005,Eka Putri,P005,2,Yogyakarta,PROCESSING
+ORD1006,Fajar Ramadhan,P006,3,Bandung,SHIPPED

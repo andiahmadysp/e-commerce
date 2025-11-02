@@ -1,0 +1,11 @@
+from,to,distance
+Jakarta,Bandung,150
+Jakarta,Cirebon,250
+Bandung,Cirebon,130
+Cirebon,Semarang,220
+Semarang,Surabaya,320
+Semarang,Yogyakarta,120
+Yogyakarta,Surabaya,300
+Jakarta,Tangerang,30
+Tangerang,Serang,60
+Bandung,Tasikmalaya,110
