@@ -12,19 +12,32 @@ public class OrderHashTable {
     private static final double LOAD_FACTOR = 0.75;
 
     public OrderHashTable() {
-        this.capacity = 16;
+        this.capacity = 16; // initial capacity
         this.table = new OrderNode[capacity];
         this.size = 0;
     }
 
+    /**
+     * Hash function to compute the index for a given key.
+     * It uses a simple polynomial rolling hash function.
+     * 
+     * @param key
+     * @return index in the hash table
+     */
     private int hash(String key) {
         int hash = 0;
         for (int i = 0; i < key.length(); i++) {
+            /**
+             * For each character, multiply current hash by 31 and add character code
+             */
             hash = (hash * 31 + key.charAt(i)) % capacity;
         }
         return Math.abs(hash);
     }
 
+    /**
+     * Resize the hash table when load factor exceeds threshold
+     */
     private void resize() {
         int oldCapacity = capacity;
         capacity *= 2;
@@ -32,6 +45,9 @@ public class OrderHashTable {
         table = new OrderNode[capacity];
         size = 0;
 
+        /**
+         * Rehash all existing entries into new table
+         */
         for (int i = 0; i < oldCapacity; i++) {
             OrderNode current = oldTable[i];
             while (current != null) {
@@ -41,11 +57,23 @@ public class OrderHashTable {
         }
     }
 
+    /**
+     * Insert or update an order in the hash table.
+     * 
+     * @param key
+     * @param value
+     */
     public void put(String key, Order value) {
+        /**
+         * Check load factor and resize if necessary
+         */
         if ((double) size / capacity >= LOAD_FACTOR) {
             resize();
         }
 
+        /**
+         * Compute index and insert/update the order
+         */
         int index = hash(key);
         OrderNode newNode = new OrderNode(key, value);
 
@@ -53,24 +81,46 @@ public class OrderHashTable {
             table[index] = newNode;
             size++;
         } else {
+            /**
+             * Handle collision with separate chaining
+             */
             OrderNode current = table[index];
             while (current != null) {
+                /**
+                 * Update existing key
+                 */
                 if (current.key.equals(key)) {
                     current.value = value;
                     return;
                 }
-                if (current.next == null) break;
+                /**
+                 * Move to next node until end of chain
+                 */
+                if (current.next == null)
+                    break;
                 current = current.next;
             }
+            /**
+             * Append new node at the end of the chain
+             */
             current.next = newNode;
             size++;
         }
     }
 
+    /**
+     * Retrieve an order by key.
+     * 
+     * @param key
+     * @return Order object or null if not found
+     */
     public Order get(String key) {
         int index = hash(key);
         OrderNode current = table[index];
 
+        /**
+         * Traverse the chain to find the key
+         */
         while (current != null) {
             if (current.key.equals(key)) {
                 return current.value;
@@ -80,11 +130,20 @@ public class OrderHashTable {
         return null;
     }
 
+    /**
+     * Remove an order by key.
+     * 
+     * @param key
+     * @return true if removed, false if not found
+     */
     public boolean remove(String key) {
         int index = hash(key);
         OrderNode current = table[index];
         OrderNode prev = null;
 
+        /**
+         * Traverse the chain to find and remove the key
+         */
         while (current != null) {
             if (current.key.equals(key)) {
                 if (prev == null) {
@@ -103,6 +162,9 @@ public class OrderHashTable {
 
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
+        /**
+         * Traverse entire table and collect all orders
+         */
         for (int i = 0; i < capacity; i++) {
             OrderNode current = table[i];
             while (current != null) {
