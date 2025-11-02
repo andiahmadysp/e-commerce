@@ -166,60 +166,77 @@ public class ProductBST {
     }
 
     /**
-     * Find product with minimum ID.
+     * Find product with minimum price.
      * 
-     * @return Product with minimum ID
+     * @return Product with minimum price
      */
     public Product findMin() {
-        return findMinRec(root);
+        return findMinByPrice(root);
     }
 
     /**
-     * Recursive helper to find product with minimum ID.
+     * Recursive helper to find product with minimum price.
      * 
      * @param node
-     * @return Product with minimum ID
+     * @return Product with minimum price
      */
-    private Product findMinRec(ProductNode node) {
+
+    private Product findMinByPrice(ProductNode node) {
         if (node == null)
             return null;
-        /**
-         * Traverse left until null
-         */
-        if (node.left == null)
-            return node.product;
-        return findMinRec(node.left);
+
+        Product minProduct = node.product;
+
+        Product leftMin = findMinByPrice(node.left);
+        if (leftMin != null && leftMin.getPrice() < minProduct.getPrice()) {
+            minProduct = leftMin;
+        }
+
+        Product rightMin = findMinByPrice(node.right);
+        if (rightMin != null && rightMin.getPrice() < minProduct.getPrice()) {
+            minProduct = rightMin;
+        }
+
+        return minProduct;
     }
 
     /**
-     * Find product with maximum ID.
+     * Find product with maximum price.
      * 
-     * @return Product with maximum ID
+     * @return Product with maximum price
      */
     public Product findMax() {
-        return findMaxRec(root);
+        return findMaxByPrice(root);
     }
 
     /**
-     * Recursive helper to find product with maximum ID.
+     * Recursive helper to find product with maximum price.
      * 
      * @param node
-     * @return Product with maximum ID
+     * @return Product with maximum price
      */
-    private Product findMaxRec(ProductNode node) {
+    private Product findMaxByPrice(ProductNode node) {
         if (node == null)
             return null;
-        /**
-         * Traverse right until null
-         */
-        if (node.right == null)
-            return node.product;
-        return findMaxRec(node.right);
+
+        Product maxProduct = node.product;
+
+        Product leftMax = findMaxByPrice(node.left);
+        if (leftMax != null && leftMax.getPrice() > maxProduct.getPrice()) {
+            maxProduct = leftMax;
+        }
+
+        Product rightMax = findMaxByPrice(node.right);
+        if (rightMax != null && rightMax.getPrice() > maxProduct.getPrice()) {
+            maxProduct = rightMax;
+        }
+
+        return maxProduct;
     }
 
     /**
      * Delete a product by ID.
-     * Will look for the product depth-first. 
+     * Will look for the product depth-first.
      *
      * @param id
      * @return true if deleted, false if not found
@@ -262,13 +279,21 @@ public class ProductBST {
             /**
              * Two children - find inorder successor (min in right subtree)
              */
-            Product minRight = findMinRec(node.right);
+            Product minRight = findMinById(node.right);
             node.product = minRight;
             node.right = deleteRec(node.right, minRight.getId());
             size++;
         }
 
         return node;
+    }
+
+    private Product findMinById(ProductNode node) {
+        if (node == null)
+            return null;
+        if (node.left == null)
+            return node.product;
+        return findMinById(node.left);
     }
 
     public int getSize() {
