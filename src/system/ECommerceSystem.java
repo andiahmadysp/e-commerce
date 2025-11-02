@@ -23,6 +23,15 @@ public class ECommerceSystem {
         this.orderCounter = 1000;
     }
 
+    /**
+     * Add a new product to the system.
+     * 
+     * @param id
+     * @param name
+     * @param category
+     * @param price
+     * @param stock
+     */
     public void addProduct(String id, String name, String category, double price, int stock) {
         if (productTree.search(id) != null) {
             System.out.println("Produk dengan ID " + id + " sudah ada!");
@@ -30,6 +39,10 @@ public class ECommerceSystem {
         }
 
         Product product = new Product(id, name, category, price, stock);
+
+        /**
+         * Insert product into BST
+         */
         productTree.insert(product);
         System.out.println("\nProduk berhasil ditambahkan!");
         product.displayInfo();
@@ -37,6 +50,10 @@ public class ECommerceSystem {
 
     public void searchProduct(String id) {
         long startTime = System.nanoTime();
+        /**
+         * Search product in BST by ID
+         * Search is done depth-first
+         */
         Product product = productTree.search(id);
         long endTime = System.nanoTime();
 
@@ -49,7 +66,17 @@ public class ECommerceSystem {
         }
     }
 
+    /**
+     * Search products within a price range.
+     * 
+     * @param minPrice
+     * @param maxPrice
+     */
     public void searchProductsInRange(double minPrice, double maxPrice) {
+        /**
+         * Search products in BST within price range
+         * Search is done depth-first
+         */
         List<Product> products = productTree.searchInRange(minPrice, maxPrice);
 
         if (products.isEmpty()) {
@@ -57,6 +84,9 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Display formatting
+         */
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         System.out.println("\n" + "═".repeat(80));
         System.out.println("PRODUK DALAM RANGE: " + currencyFormat.format(minPrice) +
@@ -74,7 +104,17 @@ public class ECommerceSystem {
         System.out.println("Total: " + products.size() + " produk");
     }
 
+    /**
+     * Update product stock by ID.
+     * 
+     * @param id
+     * @param newStock
+     */
     public void updateProductStock(String id, int newStock) {
+        /**
+         * Search product in BST by ID
+         * Search is done depth-first
+         */
         Product product = productTree.search(id);
         if (product != null) {
             product.setStock(newStock);
@@ -85,6 +125,11 @@ public class ECommerceSystem {
         }
     }
 
+    /**
+     * Delete product by ID.
+     * 
+     * @param id
+     */
     public void deleteProduct(String id) {
         if (productTree.delete(id)) {
             System.out.println("Produk berhasil dihapus!");
@@ -95,6 +140,11 @@ public class ECommerceSystem {
 
     public void displayAllProducts() {
         List<Product> products = new ArrayList<>();
+        /**
+         * In-order traversal to get products sorted by price
+         * Search is done depth-first.
+         * Assign to products variable as list
+         */
         productTree.inOrderTraversal(products);
 
         if (products.isEmpty()) {
@@ -102,6 +152,9 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Display formatting
+         */
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         System.out.println("\n" + "═".repeat(80));
         System.out.println("KATALOG PRODUK (TERURUT BY ID)");
@@ -119,10 +172,11 @@ public class ECommerceSystem {
     }
 
     public void displayPriceExtremes() {
+        /**
+         * Find products with minimum and maximum price
+         */
         Product cheapest = productTree.findMin();
         Product expensive = productTree.findMax();
-
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
 
         System.out.println("\n" + "═".repeat(60));
         System.out.println("PRODUK TERMURAH & TERMAHAL");
@@ -428,6 +482,9 @@ public class ECommerceSystem {
         System.out.println("\n" + "═".repeat(70));
     }
 
+    /**
+     * Load sample data from CSV files
+     */
     public void loadSampleData() {
         System.out.println("\n Memuat data dari CSV...\n");
 
