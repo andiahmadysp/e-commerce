@@ -76,23 +76,47 @@ public class ProductBST {
     }
 
     public Product findMin() {
-        return findMinRec(root);
+        return findMinByPrice(root);
     }
 
-    private Product findMinRec(ProductNode node) {
+    private Product findMinByPrice(ProductNode node) {
         if (node == null) return null;
-        if (node.left == null) return node.product;
-        return findMinRec(node.left);
+
+        Product minProduct = node.product;
+
+        Product leftMin = findMinByPrice(node.left);
+        if (leftMin != null && leftMin.getPrice() < minProduct.getPrice()) {
+            minProduct = leftMin;
+        }
+
+        Product rightMin = findMinByPrice(node.right);
+        if (rightMin != null && rightMin.getPrice() < minProduct.getPrice()) {
+            minProduct = rightMin;
+        }
+
+        return minProduct;
     }
 
     public Product findMax() {
-        return findMaxRec(root);
+        return findMaxByPrice(root);
     }
 
-    private Product findMaxRec(ProductNode node) {
+    private Product findMaxByPrice(ProductNode node) {
         if (node == null) return null;
-        if (node.right == null) return node.product;
-        return findMaxRec(node.right);
+
+        Product maxProduct = node.product;
+
+        Product leftMax = findMaxByPrice(node.left);
+        if (leftMax != null && leftMax.getPrice() > maxProduct.getPrice()) {
+            maxProduct = leftMax;
+        }
+
+        Product rightMax = findMaxByPrice(node.right);
+        if (rightMax != null && rightMax.getPrice() > maxProduct.getPrice()) {
+            maxProduct = rightMax;
+        }
+
+        return maxProduct;
     }
 
     public boolean delete(String id) {
@@ -114,13 +138,19 @@ public class ProductBST {
             if (node.left == null) return node.right;
             if (node.right == null) return node.left;
 
-            Product minRight = findMinRec(node.right);
+            Product minRight = findMinById(node.right);
             node.product = minRight;
             node.right = deleteRec(node.right, minRight.getId());
             size++;
         }
 
         return node;
+    }
+
+    private Product findMinById(ProductNode node) {
+        if (node == null) return null;
+        if (node.left == null) return node.product;
+        return findMinById(node.left);
     }
 
     public int getSize() {
