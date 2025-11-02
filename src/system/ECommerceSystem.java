@@ -178,6 +178,9 @@ public class ECommerceSystem {
         Product cheapest = productTree.findMin();
         Product expensive = productTree.findMax();
 
+        /**
+         * Display formatting
+         */
         System.out.println("\n" + "═".repeat(60));
         System.out.println("PRODUK TERMURAH & TERMAHAL");
         System.out.println("═".repeat(60));
@@ -194,7 +197,19 @@ public class ECommerceSystem {
         System.out.println("═".repeat(60));
     }
 
+    /**
+     * Create a new order.
+     * 
+     * @param customerName
+     * @param productId
+     * @param quantity
+     * @param shippingCity
+     */
     public void createOrder(String customerName, String productId, int quantity, String shippingCity) {
+        /**
+         * Search product in BST by ID
+         * Search is done depth-first
+         */
         Product product = productTree.search(productId);
 
         if (product == null) {
@@ -207,20 +222,37 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Generate unique order ID
+         */
         String orderId = "ORD" + (orderCounter++);
         double totalPrice = product.getPrice() * quantity;
 
+        /**
+         * Create order and insert into hash table
+         */
         Order order = new Order(orderId, customerName, productId, quantity, totalPrice, shippingCity);
         orderTable.put(orderId, order);
 
+        /**
+         * Update product stock
+         */
         product.setStock(product.getStock() - quantity);
 
         System.out.println("\nPesanan berhasil dibuat!");
         order.displayInfo();
     }
 
+    /**
+     * Search for an order by ID.
+     * 
+     * @param orderId
+     */
     public void searchOrder(String orderId) {
         long startTime = System.nanoTime();
+        /**
+         * Search order in hash table with orderId as key
+         */
         Order order = orderTable.get(orderId);
         long endTime = System.nanoTime();
 
@@ -233,9 +265,21 @@ public class ECommerceSystem {
         }
     }
 
+    /**
+     * Update order status by order ID.
+     * 
+     * @param orderId
+     * @param status
+     */
     public void updateOrderStatus(String orderId, String status) {
+        /**
+         * Search order in hash table with orderId as key
+         */
         Order order = orderTable.get(orderId);
         if (order != null) {
+            /**
+             * Update order status
+             */
             order.setStatus(status);
             System.out.println("Status pesanan berhasil diupdate!");
             order.displayInfo();
@@ -244,14 +288,28 @@ public class ECommerceSystem {
         }
     }
 
+    /**
+     * Cancel an order by ID.
+     * 
+     * @param orderId
+     */
     public void cancelOrder(String orderId) {
+        /**
+         * Search order in hash table with orderId as key
+         */
         Order order = orderTable.get(orderId);
         if (order != null) {
+            /**
+             * Restore product stock
+             */
             Product product = productTree.search(order.getProductId());
             if (product != null) {
                 product.setStock(product.getStock() + order.getQuantity());
             }
 
+            /**
+             * Remove order from hash table
+             */
             orderTable.remove(orderId);
             System.out.println("Pesanan berhasil dibatalkan dan stok dikembalikan!");
         } else {
@@ -259,7 +317,13 @@ public class ECommerceSystem {
         }
     }
 
+    /**
+     * Display all orders in the system.
+     */
     public void displayAllOrders() {
+        /**
+         * Get all orders from hash table as list
+         */
         List<Order> orders = orderTable.getAllOrders();
 
         if (orders.isEmpty()) {
@@ -267,6 +331,9 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Display formatting
+         */
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         System.out.println("\n" + "═".repeat(90));
         System.out.println("DAFTAR SEMUA PESANAN");
@@ -284,10 +351,18 @@ public class ECommerceSystem {
         System.out.println("Total: " + orders.size() + " pesanan");
     }
 
+    /**
+     * Display orders filtered by status.
+     * 
+     * @param status
+     */
     public void displayOrdersByStatus(String status) {
         List<Order> allOrders = orderTable.getAllOrders();
         List<Order> filteredOrders = new ArrayList<>();
 
+        /**
+         * Filter orders by status
+         */
         for (Order order : allOrders) {
             if (order.getStatus().equals(status)) {
                 filteredOrders.add(order);
@@ -299,6 +374,9 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Display formatting
+         */
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         System.out.println("\n" + "═".repeat(90));
         System.out.println("PESANAN STATUS: " + status);
@@ -316,17 +394,38 @@ public class ECommerceSystem {
         System.out.println("Total: " + filteredOrders.size() + " pesanan");
     }
 
+    /**
+     * Add a new city/hub to the shipping graph.
+     * 
+     * @param city
+     */
     public void addCity(String city) {
         shippingGraph.addCity(city);
         System.out.println("Kota/Hub " + city + " berhasil ditambahkan!");
     }
 
+    /**
+     * Add a new route between two cities/hubs.
+     * 
+     * @param from
+     * @param to
+     * @param distance
+     */
     public void addRoute(String from, String to, int distance) {
         shippingGraph.addRoute(from, to, distance);
         System.out.println("Rute " + from + " ↔ " + to + " (" + distance + " km) berhasil ditambahkan!");
     }
 
+    /**
+     * Find the shortest delivery path between two cities/hubs.
+     * 
+     * @param from
+     * @param to
+     */
     public void findShortestDeliveryPath(String from, String to) {
+        /**
+         * Construct shortest path using Dijkstra's algorithm
+         */
         List<String> path = shippingGraph.getPath(from, to);
 
         if (path.isEmpty()) {
@@ -334,6 +433,9 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Calculate total distance
+         */
         Map<String, Integer> distances = shippingGraph.dijkstra(from);
         int totalDistance = distances.get(to);
 
@@ -355,7 +457,13 @@ public class ECommerceSystem {
         System.out.println("└─ Waktu Tempuh     : " + String.format("%.1f", estimatedHours) + " jam");
     }
 
+    /**
+     * Display the entire shipping network.
+     */
     public void displayShippingNetwork() {
+        /**
+         * Get adjacency list of the shipping graph
+         */
         Map<String, Map<String, Integer>> network = shippingGraph.getAdjacencyList();
 
         if (network.isEmpty()) {
@@ -363,11 +471,17 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Display formatting
+         */
         System.out.println("\n" + "═".repeat(60));
         System.out.println("JARINGAN PENGIRIMAN");
         System.out.println("═".repeat(60));
 
         for (Map.Entry<String, Map<String, Integer>> entry : network.entrySet()) {
+            /**
+             * For every city, display its routes and distances
+             */
             String city = entry.getKey();
             Map<String, Integer> routes = entry.getValue();
 
@@ -384,8 +498,16 @@ public class ECommerceSystem {
         System.out.println("Total Kota/Hub: " + network.size());
     }
 
+    /**
+     * Simulate multiple shipments from a given origin city/hub.
+     * 
+     * @param origin
+     */
     public void simulateMultipleShipments(String origin) {
         List<Order> pendingOrders = new ArrayList<>();
+        /**
+         * Collect all orders with status "PROCESSING" or "PENDING"
+         */
         for (Order order : orderTable.getAllOrders()) {
             if (order.getStatus().equals("PROCESSING") || order.getStatus().equals("PENDING")) {
                 pendingOrders.add(order);
@@ -397,6 +519,9 @@ public class ECommerceSystem {
             return;
         }
 
+        /**
+         * Calculate shortest distances from origin to all destinations
+         */
         Map<String, Integer> distances = shippingGraph.dijkstra(origin);
 
         System.out.println("\n" + "═".repeat(70));
@@ -411,6 +536,9 @@ public class ECommerceSystem {
         double totalCost = 0;
 
         for (Order order : pendingOrders) {
+            /**
+             * For each order, get distance to shipping city
+             */
             String destination = order.getShippingCity();
             Integer distance = distances.get(destination);
 
@@ -435,8 +563,16 @@ public class ECommerceSystem {
         System.out.println("═".repeat(70));
     }
 
+    /**
+     * Display system dashboard with key metrics.
+     */
     public void displayDashboard() {
         List<Product> products = new ArrayList<>();
+        /**
+         * In-order traversal to get all products
+         * Search is done depth-first.
+         * Assign to products variable as list
+         */
         productTree.inOrderTraversal(products);
         List<Order> orders = orderTable.getAllOrders();
 
@@ -490,13 +626,29 @@ public class ECommerceSystem {
 
         List<String[]> productData = CSVLoader.loadCSV("src/data/products.csv");
         for (String[] row : productData) {
+            /**
+             * Parse product data per row and insert into BST
+             */
             try {
-                String id = row[0];
-                String name = row[1];
-                String category = row[2];
-                double price = Double.parseDouble(row[3]);
-                int stock = Integer.parseInt(row[4]);
+                /**
+                 * CSV Shape:
+                 * id,name,category,price,stock
+                 */
+                final int id_idx = 0;
+                final int name_idx = 1;
+                final int category_idx = 2;
+                final int price_idx = 3;
+                final int stock_idx = 4;
 
+                String id = row[id_idx];
+                String name = row[name_idx];
+                String category = row[category_idx];
+                double price = Double.parseDouble(row[price_idx]);
+                int stock = Integer.parseInt(row[stock_idx]);
+
+                /**
+                 * Create product and insert into BST
+                 */
                 Product product = new Product(id, name, category, price, stock);
                 productTree.insert(product);
             } catch (Exception e) {
@@ -508,13 +660,31 @@ public class ECommerceSystem {
         Set<String> cities = new HashSet<>();
 
         for (String[] row : routeData) {
+            /**
+             * Parse route data per row and add to shipping graph
+             */
             try {
-                String from = row[0];
-                String to = row[1];
-                int distance = Integer.parseInt(row[2]);
+                /**
+                 * CSV Shape:
+                 * from,to,distance
+                 */
+                final int from_idx = 0;
+                final int to_idx = 1;
+                final int distance_idx = 2;
 
+                String from = row[from_idx];
+                String to = row[to_idx];
+                int distance = Integer.parseInt(row[distance_idx]);
+
+                /**
+                 * Add cities to set
+                 */
                 cities.add(from);
                 cities.add(to);
+
+                /**
+                 * Add route to shipping graph
+                 */
                 shippingGraph.addRoute(from, to, distance);
             } catch (Exception e) {
                 System.out.println("Error loading route: " + Arrays.toString(row));
@@ -522,20 +692,44 @@ public class ECommerceSystem {
         }
 
         for (String city : cities) {
+            /**
+             * Add all unique cities from set to shipping graph as nodes
+             */
             shippingGraph.addCity(city);
         }
 
         List<String[]> orderData = CSVLoader.loadCSV("src/data/orders.csv");
         for (String[] row : orderData) {
+            /**
+             * Parse order data per row and insert into hash table
+             */
             try {
-                String orderId = row[0];
-                String customerName = row[1];
-                String productId = row[2];
-                int quantity = Integer.parseInt(row[3]);
-                String shippingCity = row[4];
-                String status = row[5];
+                /**
+                 * CSV Shape:
+                 * orderId,customerName,productId,quantity,shippingCity,status
+                 */
+                final int orderId_idx = 0;
+                final int customerName_idx = 1;
+                final int productId_idx = 2;
+                final int quantity_idx = 3;
+                final int shippingCity_idx = 4;
+                final int status_idx = 5;
 
+                String orderId = row[orderId_idx];
+                String customerName = row[customerName_idx];
+                String productId = row[productId_idx];
+                int quantity = Integer.parseInt(row[quantity_idx]);
+                String shippingCity = row[shippingCity_idx];
+                String status = row[status_idx];
+
+                /**
+                 * Search product in BST by ID
+                 * Search is done depth-first
+                 */
                 Product product = productTree.search(productId);
+                /**
+                 * Create order and insert into hash table if product exists and stock is sufficient
+                 */
                 if (product != null && product.getStock() >= quantity) {
                     double totalPrice = product.getPrice() * quantity;
                     Order order = new Order(orderId, customerName, productId,
